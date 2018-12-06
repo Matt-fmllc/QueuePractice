@@ -47,3 +47,37 @@ bool CQueue::DeQueue(int* _pData)
 
 	return false;
 }
+
+bool CQueue::Recurse(CNode* _pNode, CNode* _pPrevNode, int* _pData)
+{
+	if (_pNode->pNext != nullptr) {
+		Recurse(_pNode->pNext, _pNode, _pData);
+	}
+	else {
+		*_pData = *_pNode->pData;
+		if (_pPrevNode) {
+			_pPrevNode->pNext = nullptr;
+		}
+		else {
+			m_pRootNode = nullptr;
+		}
+		delete(_pNode);
+		return true;
+	}
+
+	return false;
+}
+
+bool CQueue::DeQueueRecursive(int* _pData)
+{
+
+	if (!m_pRootNode) {
+		// empty q
+		return false;
+	}
+
+	CNode* pNode = m_pRootNode;
+	Recurse(pNode, nullptr, _pData);
+
+	return true;
+}

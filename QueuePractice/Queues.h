@@ -18,6 +18,8 @@ private:
 	CNode*  m_pHeadNode;
 
 protected:
+	bool Recurse(CNode* _pNode, CNode* _pPrevNode, int* _pData);
+
 public:
 	CQueue(): m_pRootNode(nullptr) 
 	{}
@@ -26,5 +28,6 @@ public:
 
 	bool EnQueue(int* _pData);
 	bool DeQueue(int* _pData);
+	bool DeQueueRecursive(int* _pData);
 };
 
