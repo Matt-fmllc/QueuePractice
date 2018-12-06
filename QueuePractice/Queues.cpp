@@ -81,3 +81,42 @@ bool CQueue::DeQueueRecursive(int* _pData)
 
 	return true;
 }
+
+bool CQueue_Priority::EnQueue(int* _pData)
+{
+	CNode* pNode = m_pRootNode;
+	CNode* pPrevNode = m_pRootNode;
+	CNode* pNewNode = new CNode;
+	if (!pNewNode)
+		return false;
+	
+	pNewNode->pData = _pData;
+
+	while (pNode != nullptr) {
+		if (*pNewNode->pData >= *pNode->pData) {
+			pNewNode->pNext = pNode;
+			if (pNode == m_pRootNode) {
+				m_pRootNode = pNewNode;
+			}
+			else {
+				pPrevNode->pNext = pNewNode;
+			}
+			return true;
+		}
+		else if (pNode->pNext == nullptr) {
+			pNode->pNext = pNewNode;
+			pNewNode->pNext = nullptr;
+			return true;
+		}
+		else {
+			pPrevNode = pNode;
+			pNode = pNode->pNext;
+		}
+	}
+
+	// null case
+	pNewNode->pNext = nullptr;
+	m_pRootNode = pNewNode;
+
+	return true;
+}

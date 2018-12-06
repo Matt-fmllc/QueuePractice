@@ -14,20 +14,41 @@ public:
 	};
 
 private:
+
+protected:
 	CNode*	m_pRootNode;
 	CNode*  m_pHeadNode;
 
-protected:
 	bool Recurse(CNode* _pNode, CNode* _pPrevNode, int* _pData);
 
 public:
 	CQueue(): m_pRootNode(nullptr) 
 	{}
-	~CQueue() {}
+	virtual ~CQueue() {}
 
 
-	bool EnQueue(int* _pData);
-	bool DeQueue(int* _pData);
-	bool DeQueueRecursive(int* _pData);
+	virtual bool EnQueue(int* _pData);
+	virtual bool DeQueue(int* _pData);
+	virtual bool DeQueueRecursive(int* _pData);
+};
+
+class CQueue_Standard : public CQueue
+{
+private:
+protected:
+public:
+	CQueue_Standard() {}
+	~CQueue_Standard() {}
+};
+
+class CQueue_Priority : public CQueue
+{
+private:
+protected:
+public:
+	CQueue_Priority() {}
+	~CQueue_Priority() {}
+
+	virtual bool EnQueue(int* _pData);
 };
 
