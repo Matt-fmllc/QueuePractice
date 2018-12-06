@@ -5,7 +5,7 @@ class CQueue
 public:
 	struct CNode {
 		CNode* pNext;
-		void* pData;
+		int* pData;
 
 		CNode(): pNext(nullptr), pData(nullptr)
 		{ }
@@ -15,6 +15,7 @@ public:
 
 private:
 	CNode*	m_pRootNode;
+	CNode*  m_pHeadNode;
 
 protected:
 public:
@@ -23,7 +24,7 @@ public:
 	~CQueue() {}
 
 
-	bool EnQueue(void* _pData);
-	bool DeQueue(void* _pData);
+	bool EnQueue(int* _pData);
+	bool DeQueue(int* _pData);
 };
 
