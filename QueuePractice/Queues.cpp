@@ -93,7 +93,7 @@ bool CQueue_Priority::EnQueue(int* _pData)
 	pNewNode->pData = _pData;
 
 	while (pNode != nullptr) {
-		if (*pNewNode->pData >= *pNode->pData) {
+		if (*pNewNode->pData <= *pNode->pData) {
 			pNewNode->pNext = pNode;
 			if (pNode == m_pRootNode) {
 				m_pRootNode = pNewNode;
