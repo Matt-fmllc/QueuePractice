@@ -1,11 +1,14 @@
 #pragma once
 
+#include <cassert>
+
 namespace QueueTemplate{
 
 	template<class T>
 	class TQueue
 	{
 	public:
+		// defines behavior of Queue
 		typedef enum _QueueTypes
 		{
 			eQT_Illegal,
@@ -13,6 +16,7 @@ namespace QueueTemplate{
 			eQT_SingleLinked,
 			eQT_DoubleLinked,
 			eQT_Circular,
+			eQT_Priority,
 			
 			eQT_Mex
 		}QueueType;
@@ -21,8 +25,10 @@ namespace QueueTemplate{
 		typedef enum _AllocationType
 		{
 			eAT_Illegal,
+
 			eAT_FixedMem,
 			eAT_DynamicMem,
+
 			eAT_Max,
 		}AllocationType;
 
@@ -30,6 +36,7 @@ namespace QueueTemplate{
 		template<class T>
 		class TNode
 		{
+		public:
 			T			Data;
 			TNode<T>*	pNext;
 
@@ -50,6 +57,10 @@ namespace QueueTemplate{
 		QueueType		m_eQueueType;
 
 	protected:
+		inline virtual bool Clr_SL_DynMem();
+		inline virtual bool EnQ_SL_DynMem(const T& NewItem);
+		inline virtual bool DeQ_SL_DynMem(T& ReturnItem);
+
 	public:
 		TQueue() noexcept :
 			m_pRoot(nullptr), 
@@ -70,7 +81,18 @@ namespace QueueTemplate{
 
 		}
 
-		~TQueue(){}
+		virtual ~TQueue()
+		{
+			switch (m_eAllocType) {
+			case eAT_DynamicMem:
+				Clr_SL_DynMem();
+				break;
+			case eAT_FixedMem:
+				break;
+			default:
+				assert(0 && "Unknown Memory allocation type");
+			}
+		}
 
 		inline virtual bool EnQueue(const T& NewItem);
 		inline virtual bool DeQueue(T& ReturnItem);
@@ -79,21 +101,106 @@ namespace QueueTemplate{
 	};
 
 	template<class T>
+	bool TQueue<T>::EnQ_SL_DynMem(const T& NewItem)
+	{
+		TNode<T>* pNewNode = new TNode<T>(NewItem);
+		assert(pNewNode);
+
+		pNewNode->pNext = m_pRoot;
+		m_pRoot = pNewNode;
+
+		if (m_pHead == nullptr) {
+			m_pHead = pNewNode;
+		}
+		
+		return true;
+	}
+
+	template<class T>
+	bool TQueue<T>::Clr_SL_DynMem()
+	{
+		TNode<T>* pNode = m_pRoot;
+		TNode<T>* pNextNode = nullptr;
+		while (pNode != nullptr) {
+			pNextNode = pNode->pNext;
+			delete pNode;
+			pNode = pNextNode;
+		}
+		m_pRoot = nullptr;
+		return true;
+	}
+
+	template<class T>
+	bool TQueue<T>::DeQ_SL_DynMem(T& ReturnItem)
+	{
+		TNode<T>* pNode = m_pRoot;
+		TNode<T>* pLastNode = nullptr;
+		while(pNode != nullptr){
+			if (pNode->pNext == nullptr) {
+				ReturnItem = pNode->Data;
+				if (pLastNode != nullptr) {
+					pLastNode->pNext = nullptr;
+				}
+				if (m_pRoot == pNode) {
+					m_pRoot = nullptr;
+				}
+				delete pNode;
+				return true;
+			}
+			pLastNode = pNode;
+			pNode = pNode->pNext;
+		}
+		// empty Q
+		return false;
+	}
+
+	template<class T>
 	bool TQueue<T>::EnQueue(const T& NewItem)
 	{
+		bool bResult = false;
+
+		switch (m_eAllocType) {
+		case eAT_DynamicMem:
+			bResult = EnQ_SL_DynMem(NewItem);
+			break;
+		case eAT_FixedMem:
+			break;
+		default:
+			assert(0 && "No allocation type specified");
+		}
+
 		return true;
 	}
 
 	template<class T>
 	bool TQueue<T>::DeQueue(T& ReturnItem)
 	{
-		return true;
+		bool bResult = false;
+
+		switch (m_eAllocType) {
+		case eAT_DynamicMem:
+			bResult = DeQ_SL_DynMem(ReturnItem);
+			break;
+		case eAT_FixedMem:
+			break;
+		default:
+			assert(0 && "No Allocation type specified");
+		}
+
+		return bResult;
 	}
 
 	template<class T>
 	bool TQueue<T>::Clear()
 	{
-		return true;
+		switch (m_eAllocType) {
+		case eAT_DynamicMem:		return Clr_SL_DynMem();
+		case eAT_FixedMem:			return true;
+		default:
+			assert(0 && "Unknown memory allocation type");
+		}
+
+		return false;
 	}
 
 }	// end namespace

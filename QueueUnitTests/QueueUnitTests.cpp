@@ -14,9 +14,58 @@ namespace QueueUnitTests
 	{
 	public:
 		
-		TEST_METHOD(EnQDeQTest)
+		TEST_METHOD(EnQDeQ_SL_Dyn_Test)
 		{
-			// TODO: Your test code here
+			TQueue<int> Q;
+
+			int iTestVals[1000] = { 0 };
+			for (int x = 0; x < 1000; x++) {
+				iTestVals[x] = std::rand();
+				Q.EnQueue(iTestVals[x]);
+			}
+
+			int iRetVal = 0;
+			for (int x = 0; x < 1000; x++) {
+				Q.DeQueue(iRetVal);
+				Assert::AreEqual(iRetVal,iTestVals[x]);
+			}
+		}
+		TEST_METHOD(EnQDeQClrEnQDeQ_SL_Dyn_Test)
+		{
+			TQueue<int> Q;
+
+			int iTestVals[1000] = { 0 };
+			for (int x = 0; x < 1000; x++) {
+				iTestVals[x] = std::rand();
+				Q.EnQueue(iTestVals[x]);
+			}
+
+			int iRetVal = 0;
+			for (int x = 0; x < 1000; x++) {
+				Q.DeQueue(iRetVal);
+				Assert::AreEqual(iRetVal, iTestVals[x]);
+			}
+
+			// add a bunch of values
+			for (int x = 0; x < 1000; x++) {
+				iTestVals[x] = std::rand();
+				Q.EnQueue(iTestVals[x]);
+			}
+			// clear the Q
+			Q.Clear();
+
+			// add a bunch of values
+			for (int x = 0; x < 1000; x++) {
+				iTestVals[x] = std::rand();
+				Q.EnQueue(iTestVals[x]);
+			}
+
+			// validate the values
+			for (int x = 0; x < 1000; x++) {
+				Q.DeQueue(iRetVal);
+				Assert::AreEqual(iRetVal, iTestVals[x]);
+			}
+
 		}
 
 	};

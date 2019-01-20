@@ -29,10 +29,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QueuePractice.cpp">
+    <ClCompile Include="Queues.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Queues.cpp">
+    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
