@@ -59,7 +59,9 @@ namespace QueueTemplate{
 	protected:
 		inline virtual bool Clr_SL_DynMem();
 		inline virtual bool EnQ_SL_DynMem(const T& NewItem);
+		inline virtual bool EnQ_SL_DynMem2(const T& NewItem);	// 1 ptr implementation
 		inline virtual bool DeQ_SL_DynMem(T& ReturnItem);
+		inline virtual bool DeQ_SL_DynMem2(T& ReturnItem);		// 1 ptr implementation
 
 	public:
 		TQueue() noexcept :
@@ -101,7 +103,7 @@ namespace QueueTemplate{
 	};
 
 	template<class T>
-	bool TQueue<T>::EnQ_SL_DynMem(const T& NewItem)
+	bool TQueue<T>::EnQ_SL_DynMem2(const T& NewItem)
 	{
 		TNode<T>* pNewNode = new TNode<T>(NewItem);
 		assert(pNewNode);
@@ -117,6 +119,43 @@ namespace QueueTemplate{
 	}
 
 	template<class T>
+	bool TQueue<T>::EnQ_SL_DynMem(const T& NewItem)
+	{
+		TNode<T>* pNewNode = new TNode<T>(NewItem);
+		assert(pNewNode);
+
+		pNewNode->pNext = nullptr;
+		if (m_pHead == nullptr) {
+			m_pRoot = pNewNode;
+			m_pHead = pNewNode;
+		}
+		else {
+			m_pHead->pNext = pNewNode;
+			m_pHead = pNewNode;
+		}
+
+		return true;
+	}
+
+	template<class T>
+	bool TQueue<T>::DeQ_SL_DynMem(T& ReturnItem)
+	{
+		if (!m_pRoot) {
+			return false;
+		}
+
+		TNode<T>* pTempNode = nullptr;
+		ReturnItem = m_pRoot->Data;
+		pTempNode = m_pRoot;
+		m_pRoot = m_pRoot->pNext;
+		if (m_pRoot == nullptr) {
+			m_pHead = nullptr;
+		}
+		delete pTempNode;
+		return true;
+	}
+
+	template<class T>
 	bool TQueue<T>::Clr_SL_DynMem()
 	{
 		TNode<T>* pNode = m_pRoot;
@@ -127,11 +166,12 @@ namespace QueueTemplate{
 			pNode = pNextNode;
 		}
 		m_pRoot = nullptr;
+		m_pHead = nullptr;
 		return true;
 	}
 
 	template<class T>
-	bool TQueue<T>::DeQ_SL_DynMem(T& ReturnItem)
+	bool TQueue<T>::DeQ_SL_DynMem2(T& ReturnItem)
 	{
 		TNode<T>* pNode = m_pRoot;
 		TNode<T>* pLastNode = nullptr;
@@ -171,6 +211,7 @@ namespace QueueTemplate{
 
 		return true;
 	}
+
 
 	template<class T>
 	bool TQueue<T>::DeQueue(T& ReturnItem)
