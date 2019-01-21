@@ -77,53 +77,60 @@ namespace QueueTemplate{
 		{
 
 		}
-		TQueue(QueueType _eQT, AllocationType _eAllocType, int _iAllocSize) :
-			m_pRoot(nullptr),
-			m_pHead(nullptr),
-			m_iAllocationSize(_iAllocSize),
-			m_eAllocType(_eAllocType),
-			m_eQueueType(_eQT)
-		{
-			switch (_eQT) {
-			case eQT_DoubleLinked:
-				if (_eAllocType == eAT_DynamicMem) {
+		TQueue(QueueType _eQT, AllocationType _eAllocType, int _iAllocSize);
 
-				}
-				else if ( _eAllocType == eAT_FixedMem) {
-
-				}
-				break;
-			case eQT_SingleLinked:
-				if (_eAllocType == eAT_DynamicMem) {
-
-				}
-				else if ( _eAllocType == eAT_FixedMem) {
-
-				}
-				break;
-			default:
-				assert(0 && "Unhandled Q Type");
-			}
-		}
-
-		virtual ~TQueue()
-		{
-			switch (m_eAllocType) {
-			case eAT_DynamicMem:
-				Clr_SL_DynMem();
-				break;
-			case eAT_FixedMem:
-				break;
-			default:
-				assert(0 && "Unknown Memory allocation type");
-			}
-		}
+		virtual ~TQueue();
 
 		inline virtual bool EnQueue(const T& NewItem);
 		inline virtual bool DeQueue(T& ReturnItem);
+		inline virtual bool Search(const T& SearchItem);
 
 		inline virtual bool Clear();
 	};
+
+	template<class T>
+	TQueue<T>::TQueue(QueueType _eQT, AllocationType _eAllocType, int _iAllocSize) :
+		m_pRoot(nullptr),
+		m_pHead(nullptr),
+		m_iAllocationSize(_iAllocSize),
+		m_eAllocType(_eAllocType),
+		m_eQueueType(_eQT)
+	{
+		switch (_eQT) {
+		case eQT_DoubleLinked:
+			if (_eAllocType == eAT_DynamicMem) {
+
+			}
+			else if (_eAllocType == eAT_FixedMem) {
+
+			}
+			break;
+		case eQT_SingleLinked:
+			if (_eAllocType == eAT_DynamicMem) {
+
+			}
+			else if (_eAllocType == eAT_FixedMem) {
+
+			}
+			break;
+		default:
+			assert(0 && "Unhandled Q Type");
+		}
+	}
+
+	template<class T>
+	TQueue<T>::~TQueue()
+	{
+		switch (m_eAllocType) {
+		case eAT_DynamicMem:
+			Clr_SL_DynMem();
+			break;
+		case eAT_FixedMem:
+			break;
+		default:
+			assert(0 && "Unknown Memory allocation type");
+		}
+	}
 
 	template<class T>
 	bool TQueue<T>::EnQ_DL_DynMem(const T& NewItem)
@@ -312,6 +319,21 @@ namespace QueueTemplate{
 			assert(0 && "Unknown memory allocation type");
 		}
 
+		return false;
+	}
+
+	template<class T>
+	bool TQueue<T>::Search(const T& _SearchItem)
+	{
+		TNode<T>* pNode = m_pRoot;
+
+		while (pNode) {
+			if (pNode->Data == _SearchItem) {
+				return true;
+			}
+
+			pNode = pNode->pNext;
+		}
 		return false;
 	}
 

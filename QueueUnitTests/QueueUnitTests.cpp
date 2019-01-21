@@ -13,7 +13,29 @@ namespace QueueUnitTests
 	TEST_CLASS(QueueTemplateUnitTests)
 	{
 	public:
-		
+		TEST_METHOD(EnQSearchDeQSearch_SL_Dyn_Test)
+		{
+			TQueue<int> Q;
+
+			int iTestVals[1000] = { 0 };
+			for (int x = 0; x < 1000; x++) {
+				iTestVals[x] = std::rand();
+				Q.EnQueue(iTestVals[x]);
+			}
+
+			bool bResult = false;
+			for (int x = 0; x < 1000; x += 2) {
+				bResult = Q.Search(iTestVals[x]);
+				Assert::IsTrue(bResult);
+			}
+
+			int iRetVal = 0;
+			for (int x = 0; x < 1000; x++) {
+				Q.DeQueue(iRetVal);
+				Assert::AreEqual(iRetVal, iTestVals[x]);
+			}
+		}
+
 		TEST_METHOD(EnQDeQ_SL_Dyn_Test)
 		{
 			TQueue<int> Q;
