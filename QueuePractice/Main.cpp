@@ -114,11 +114,44 @@ void PracticeTemplateQ()
 	}
 }
 
+void PracticeTemplateQ2()
+{
+	TQueue<int> Q(TQueue<int>::eQT_DoubleLinked, TQueue<int>::eAT_DynamicMem, -1);
+
+	int iTestVals[1000] = { 0 };
+	for (int x = 0; x < 1000; x++) {
+		iTestVals[x] = std::rand();
+		Q.EnQueue(iTestVals[x]);
+	}
+
+	int iRetVal = 0;
+	for (int x = 0; x < 1000; x++) {
+		Q.DeQueue(iRetVal);
+		assert(iRetVal == iTestVals[x]);
+	}
+
+	for (int x = 0; x < 10; x++) {
+		iTestVals[x] = std::rand();
+		Q.EnQueue(iTestVals[x]);
+	}
+	Q.Clear();
+
+	for (int x = 0; x < 10; x++) {
+		iTestVals[x] = std::rand();
+		Q.EnQueue(iTestVals[x]);
+	}
+
+	for (int x = 0; x < 10; x++) {
+		Q.DeQueue(iRetVal);
+		assert(iRetVal == iTestVals[x]);
+	}
+}
 
 int main()
 {
 	PracticeStandardQ();
 	PracticeTemplateQ();
+	PracticeTemplateQ2();
 
 	return 0;
 }

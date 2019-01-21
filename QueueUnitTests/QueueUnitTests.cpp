@@ -67,6 +67,59 @@ namespace QueueUnitTests
 			}
 
 		}
+		TEST_METHOD(EnQDeQ_DL_Dyn_Test)
+		{
+			TQueue<int> Q(TQueue<int>::eQT_DoubleLinked, TQueue<int>::eAT_DynamicMem,-1);
+
+			int iTestVals[1000] = { 0 };
+			for (int x = 0; x < 1000; x++) {
+				iTestVals[x] = std::rand();
+				Q.EnQueue(iTestVals[x]);
+			}
+
+			int iRetVal = 0;
+			for (int x = 0; x < 1000; x++) {
+				Q.DeQueue(iRetVal);
+				Assert::AreEqual(iRetVal, iTestVals[x]);
+			}
+		}
+		TEST_METHOD(EnQDeQClrEnQDeQ_DL_Dyn_Test)
+		{
+			TQueue<int> Q(TQueue<int>::eQT_DoubleLinked, TQueue<int>::eAT_DynamicMem, -1);
+
+			int iTestVals[1000] = { 0 };
+			for (int x = 0; x < 1000; x++) {
+				iTestVals[x] = std::rand();
+				Q.EnQueue(iTestVals[x]);
+			}
+
+			int iRetVal = 0;
+			for (int x = 0; x < 1000; x++) {
+				Q.DeQueue(iRetVal);
+				Assert::AreEqual(iRetVal, iTestVals[x]);
+			}
+
+			// add a bunch of values
+			for (int x = 0; x < 1000; x++) {
+				iTestVals[x] = std::rand();
+				Q.EnQueue(iTestVals[x]);
+			}
+			// clear the Q
+			Q.Clear();
+
+			// add a bunch of values
+			for (int x = 0; x < 1000; x++) {
+				iTestVals[x] = std::rand();
+				Q.EnQueue(iTestVals[x]);
+			}
+
+			// validate the values
+			for (int x = 0; x < 1000; x++) {
+				Q.DeQueue(iRetVal);
+				Assert::AreEqual(iRetVal, iTestVals[x]);
+			}
+
+		}
 
 	};
 }

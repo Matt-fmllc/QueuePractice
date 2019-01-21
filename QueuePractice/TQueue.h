@@ -39,9 +39,10 @@ namespace QueueTemplate{
 		public:
 			T			Data;
 			TNode<T>*	pNext;
+			TNode<T>*	pPrev;
 
 			TNode(const T& data) noexcept :
-				Data(data), pNext(nullptr)
+				Data(data), pNext(nullptr), pPrev(nullptr)
 			{
 			}
 			~TNode() {}
@@ -63,6 +64,9 @@ namespace QueueTemplate{
 		inline virtual bool DeQ_SL_DynMem(T& ReturnItem);
 		inline virtual bool DeQ_SL_DynMem2(T& ReturnItem);		// 1 ptr implementation
 
+		inline virtual bool EnQ_DL_DynMem(const T& NewItem);
+		inline virtual bool DeQ_DL_DynMem(T& ReturnItem);
+
 	public:
 		TQueue() noexcept :
 			m_pRoot(nullptr), 
@@ -73,14 +77,33 @@ namespace QueueTemplate{
 		{
 
 		}
-		TQueue(QueueType _QT, AllocationType _eAllocType, int _iAllocSize) :
+		TQueue(QueueType _eQT, AllocationType _eAllocType, int _iAllocSize) :
 			m_pRoot(nullptr),
 			m_pHead(nullptr),
-			m_iAllocationSize(-1),
-			m_eAllocType(eAT_DynamicMem),
-			m_eQueueType(eQT_SingleLinked)
+			m_iAllocationSize(_iAllocSize),
+			m_eAllocType(_eAllocType),
+			m_eQueueType(_eQT)
 		{
+			switch (_eQT) {
+			case eQT_DoubleLinked:
+				if (_eAllocType == eAT_DynamicMem) {
 
+				}
+				else if ( _eAllocType == eAT_FixedMem) {
+
+				}
+				break;
+			case eQT_SingleLinked:
+				if (_eAllocType == eAT_DynamicMem) {
+
+				}
+				else if ( _eAllocType == eAT_FixedMem) {
+
+				}
+				break;
+			default:
+				assert(0 && "Unhandled Q Type");
+			}
 		}
 
 		virtual ~TQueue()
@@ -101,6 +124,44 @@ namespace QueueTemplate{
 
 		inline virtual bool Clear();
 	};
+
+	template<class T>
+	bool TQueue<T>::EnQ_DL_DynMem(const T& NewItem)
+	{
+		TNode<T>* pNewNode = new TNode<T>(NewItem);
+		assert(pNewNode);
+
+		if (m_pHead == nullptr) {
+			m_pHead = pNewNode;
+			m_pRoot = pNewNode;
+		}
+		else {
+			m_pHead->pNext = pNewNode;
+			pNewNode->pPrev = m_pHead;
+			m_pHead = m_pHead->pNext;
+		}
+
+		return true;
+	}
+
+	template<class T>
+	bool TQueue<T>::DeQ_DL_DynMem(T& ReturnItem)
+	{
+		TNode<T>* pTemp = m_pRoot;
+		if (pTemp == nullptr) {
+			return false;
+		}
+
+		m_pRoot = m_pRoot->pNext;
+		if (m_pRoot != nullptr) {
+			m_pRoot->pPrev = nullptr;
+		}
+		else {
+			m_pRoot = nullptr;
+			m_pHead = nullptr;
+		}
+		return true;
+	}
 
 	template<class T>
 	bool TQueue<T>::EnQ_SL_DynMem2(const T& NewItem)
@@ -200,8 +261,13 @@ namespace QueueTemplate{
 		bool bResult = false;
 
 		switch (m_eAllocType) {
-		case eAT_DynamicMem:
-			bResult = EnQ_SL_DynMem(NewItem);
+		case eAT_DynamicMem: 
+			{
+				switch (m_eQueueType) {
+				case eQT_DoubleLinked: bResult = EnQ_DL_DynMem(NewItem);
+				case eQT_SingleLinked: bResult = EnQ_SL_DynMem(NewItem);
+				}
+			}
 			break;
 		case eAT_FixedMem:
 			break;
@@ -220,8 +286,13 @@ namespace QueueTemplate{
 
 		switch (m_eAllocType) {
 		case eAT_DynamicMem:
-			bResult = DeQ_SL_DynMem(ReturnItem);
-			break;
+		{
+			switch (m_eQueueType) {
+			case eQT_DoubleLinked: bResult = DeQ_DL_DynMem(ReturnItem);
+			case eQT_SingleLinked: bResult = DeQ_SL_DynMem(ReturnItem);
+			}
+		}
+		break;
 		case eAT_FixedMem:
 			break;
 		default:
